@@ -264,8 +264,9 @@ watch(isDeleteDialogOpen, (open) => {
                                         ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                                         : 'text-foreground',
                                 ]"
-                                v-html="link.label"
-                            />
+                            >
+                                <span v-html="link.label" />
+                            </Link>
                         </div>
                     </nav>
             </CardContent>

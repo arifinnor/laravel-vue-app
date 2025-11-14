@@ -13,7 +13,7 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, User } from 'lucide-vue-next';
+import { LayoutGrid, User } from 'lucide-vue-next';
 import UserController from '@/actions/App/Http/Controllers/UserController';
 import AppLogo from './AppLogo.vue';
 
