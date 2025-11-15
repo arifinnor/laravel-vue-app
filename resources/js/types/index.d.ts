@@ -36,4 +36,15 @@ export interface User {
     updated_at: string;
 }
 
+export interface Teacher {
+    id: string;
+    teacherNumber: string;
+    name: string;
+    email: string;
+    phone: string | null;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt?: string | null;
+}
+
 export type BreadcrumbItemType = BreadcrumbItem;
