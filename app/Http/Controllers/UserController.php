@@ -36,6 +36,7 @@ class UserController extends Controller
 
         return Inertia::render('Users/Index', [
             'users' => $users,
+            'perPageOptions' => config('pagination.per_page_options'),
         ]);
     }
 

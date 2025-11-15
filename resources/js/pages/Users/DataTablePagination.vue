@@ -19,6 +19,7 @@ interface Props {
     path: string;
     perPage: number;
     dataCount: number;
+    perPageOptions: number[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -26,7 +27,6 @@ const props = withDefaults(defineProps<Props>(), {
     hasPrevPage: false,
 });
 
-const perPageOptions = [15, 50, 100, 200];
 const selectedPerPage = ref(String(props.perPage));
 const isUpdatingFromProps = ref(false);
 
@@ -118,7 +118,7 @@ const prevUrl = computed(() => getPrevUrl());
                 </SelectTrigger>
                 <SelectContent class="min-w-[80px]">
                     <SelectItem
-                        v-for="option in perPageOptions"
+                        v-for="option in props.perPageOptions"
                         :key="option"
                         :value="String(option)"
                         class="whitespace-nowrap"

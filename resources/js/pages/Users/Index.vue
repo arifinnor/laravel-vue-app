@@ -41,6 +41,7 @@ interface CursorPaginated<T> {
 
 interface Props {
     users: CursorPaginated<User>;
+    perPageOptions: number[];
 }
 
 const props = defineProps<Props>();
@@ -263,6 +264,7 @@ const columns = computed(() => createColumns(openDeleteDialog, openRestoreDialog
                         :path="props.users.path"
                         :per-page="props.users.per_page"
                         :data-count="props.users.data.length"
+                        :per-page-options="props.perPageOptions"
                     />
             </CardContent>
         </Card>
