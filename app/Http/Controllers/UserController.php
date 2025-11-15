@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Users\UserStoreRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -14,41 +16,32 @@ class UserController extends Controller
     /**
      * Display a listing of the users.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $perPage = request('per_page', 15);
-        $allowedPerPage = [15, 50, 100, 200];
-        $perPage = in_array((int) $perPage, $allowedPerPage, true) ? (int) $perPage : 15;
+        $perPage = $request->query('per_page', 15);
+        $perPage = in_array((int) $perPage, [15, 50, 100, 200], true) ? (int) $perPage : 15;
 
-        $users = User::query()
-            ->when(request('search'), function ($query) {
-                $search = request('search');
+        $withTrashed = $request->query('with_trashed', 'none');
+
+        $query = User::query();
+
+        match ($withTrashed) {
+            'only' => $query->onlyTrashed(),
+            'all' => $query->withTrashed(),
+            default => $query,
+        };
+
+        $users = $query
+            ->when($request->query('search'), function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
                 });
             })
             ->latest()
-            ->cursorPaginate($perPage);
-
-        $users->setPath(request()->url());
-
-        if (request()->has('search')) {
-            $users->appends(['search' => request('search')]);
-        }
-
-        if (request()->has('per_page')) {
-            $users->appends(['per_page' => $perPage]);
-        }
-
-        $users = $users->through(fn (User $user) => [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'emailVerifiedAt' => $user->email_verified_at,
-            'createdAt' => $user->created_at,
-            'updatedAt' => $user->updated_at,
-        ]);
+            ->cursorPaginate($perPage)
+            ->withQueryString()
+            ->through(fn (User $user) => UserResource::make($user)->resolve());
 
         return Inertia::render('Users/Index', [
             'users' => $users,
@@ -79,14 +72,7 @@ class UserController extends Controller
     public function show(User $user): Response
     {
         return Inertia::render('Users/Show', [
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'emailVerifiedAt' => $user->email_verified_at,
-                'createdAt' => $user->created_at,
-                'updatedAt' => $user->updated_at,
-            ],
+            'user' => UserResource::make($user)->resolve(),
         ]);
     }
 
@@ -96,11 +82,7 @@ class UserController extends Controller
     public function edit(User $user): Response
     {
         return Inertia::render('Users/Edit', [
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-            ],
+            'user' => UserResource::make($user)->resolve(),
         ]);
     }
 
@@ -128,5 +110,27 @@ class UserController extends Controller
         $user->delete();
 
         return to_route('users.index')->with('success', 'User deleted.');
+    }
+
+    /**
+     * Restore the specified soft-deleted user.
+     */
+    public function restore(string $user): RedirectResponse
+    {
+        $user = User::withTrashed()->findOrFail($user);
+        $user->restore();
+
+        return to_route('users.index')->with('success', 'User restored.');
+    }
+
+    /**
+     * Permanently delete the specified user.
+     */
+    public function forceDelete(string $user): RedirectResponse
+    {
+        $user = User::withTrashed()->findOrFail($user);
+        $user->forceDelete();
+
+        return to_route('users.index')->with('success', 'User permanently deleted.');
     }
 }

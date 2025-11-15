@@ -99,6 +99,138 @@ test('user can be deleted', function () {
         ->assertSessionHasNoErrors()
         ->assertRedirect(route('users.index'));
 
+    $this->assertSoftDeleted('users', [
+        'id' => $user->id,
+    ]);
+});
+
+test('soft deleted users do not appear in index', function () {
+    $actingUser = User::factory()->create();
+    $activeUser = User::factory()->create();
+    $deletedUser = User::factory()->create();
+    $deletedUser->delete();
+
+    $response = $this
+        ->actingAs($actingUser)
+        ->get(route('users.index'));
+
+    $response->assertOk();
+
+    $response->assertInertia(fn ($page) => $page
+        ->component('Users/Index')
+        ->has('users.data', 2)
+    );
+
+    $userIds = collect($response->viewData('page')['props']['users']['data'])->pluck('id')->toArray();
+    expect($userIds)->toContain($actingUser->id)
+        ->toContain($activeUser->id)
+        ->not->toContain($deletedUser->id);
+});
+
+test('users index can filter to show only deleted users', function () {
+    $actingUser = User::factory()->create();
+    $activeUser = User::factory()->create();
+    $deletedUser = User::factory()->create();
+    $deletedUser->delete();
+
+    $response = $this
+        ->actingAs($actingUser)
+        ->get(route('users.index', ['with_trashed' => 'only']));
+
+    $response->assertOk();
+
+    $response->assertInertia(fn ($page) => $page
+        ->component('Users/Index')
+        ->has('users.data', 1)
+    );
+
+    $userIds = collect($response->viewData('page')['props']['users']['data'])->pluck('id')->toArray();
+    expect($userIds)->toContain($deletedUser->id)
+        ->not->toContain($actingUser->id)
+        ->not->toContain($activeUser->id);
+});
+
+test('users index can filter to show all users including deleted', function () {
+    $actingUser = User::factory()->create();
+    $activeUser = User::factory()->create();
+    $deletedUser = User::factory()->create();
+    $deletedUser->delete();
+
+    $response = $this
+        ->actingAs($actingUser)
+        ->get(route('users.index', ['with_trashed' => 'all']));
+
+    $response->assertOk();
+
+    $response->assertInertia(fn ($page) => $page
+        ->component('Users/Index')
+        ->has('users.data', 3)
+    );
+
+    $userIds = collect($response->viewData('page')['props']['users']['data'])->pluck('id')->toArray();
+    expect($userIds)->toContain($actingUser->id)
+        ->toContain($activeUser->id)
+        ->toContain($deletedUser->id);
+});
+
+test('user can be restored', function () {
+    $actingUser = User::factory()->create();
+    $user = User::factory()->create();
+    $user->delete();
+
+    $this->assertSoftDeleted('users', [
+        'id' => $user->id,
+    ]);
+
+    $response = $this
+        ->actingAs($actingUser)
+        ->from(route('users.index'))
+        ->post(route('users.restore', $user));
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('users.index'));
+
+    $this->assertDatabaseHas('users', [
+        'id' => $user->id,
+        'deleted_at' => null,
+    ]);
+});
+
+test('restored user appears in active users list', function () {
+    $actingUser = User::factory()->create();
+    $user = User::factory()->create();
+    $user->delete();
+    $user->restore();
+
+    $response = $this
+        ->actingAs($actingUser)
+        ->get(route('users.index'));
+
+    $response->assertOk();
+
+    $userIds = collect($response->viewData('page')['props']['users']['data'])->pluck('id')->toArray();
+    expect($userIds)->toContain($user->id);
+});
+
+test('user can be permanently deleted', function () {
+    $actingUser = User::factory()->create();
+    $user = User::factory()->create();
+    $user->delete();
+
+    $this->assertSoftDeleted('users', [
+        'id' => $user->id,
+    ]);
+
+    $response = $this
+        ->actingAs($actingUser)
+        ->from(route('users.index'))
+        ->delete(route('users.force-delete', $user));
+
+    $response
+        ->assertSessionHasNoErrors()
+        ->assertRedirect(route('users.index'));
+
     $this->assertDatabaseMissing('users', [
         'id' => $user->id,
     ]);

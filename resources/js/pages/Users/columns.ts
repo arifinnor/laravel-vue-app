@@ -13,6 +13,7 @@ export interface User {
     emailVerifiedAt: string | null;
     createdAt: string;
     updatedAt: string;
+    deletedAt: string | null;
 }
 
 interface ColumnActionsProps {
@@ -35,6 +36,16 @@ const formatDateTime = (value: string): string =>
 
 export const createColumns = (
     onDeleteClick: (
+        user: User,
+        submit: () => void,
+        processing: () => boolean,
+    ) => void,
+    onRestoreClick?: (
+        user: User,
+        submit: () => void,
+        processing: () => boolean,
+    ) => void,
+    onForceDeleteClick?: (
         user: User,
         submit: () => void,
         processing: () => boolean,
@@ -82,6 +93,29 @@ export const createColumns = (
         },
     },
     {
+        accessorKey: 'deletedAt',
+        header: 'Status',
+        cell: ({ row }) => {
+            const deletedAt = row.getValue('deletedAt') as string | null;
+            if (deletedAt) {
+                return h(
+                    Badge,
+                    {
+                        class: 'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold bg-red-500/10 text-red-700 dark:bg-red-500/20 dark:text-red-100',
+                    },
+                    () => 'Deleted',
+                );
+            }
+            return h(
+                Badge,
+                {
+                    class: 'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-100',
+                },
+                () => 'Active',
+            );
+        },
+    },
+    {
         accessorKey: 'createdAt',
         header: 'Created',
         cell: ({ row }) => {
@@ -111,6 +145,8 @@ export const createColumns = (
             return h(ActionsCell, {
                 user,
                 onDeleteClick,
+                onRestoreClick,
+                onForceDeleteClick,
             });
         },
     },
