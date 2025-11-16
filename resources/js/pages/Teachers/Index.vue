@@ -14,7 +14,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
     Select,
@@ -215,8 +214,8 @@ const columns = computed(() => createColumns(openDeleteDialog, openRestoreDialog
     <AppLayout :breadcrumbs="breadcrumbs">
         <Head title="Teachers" />
 
-        <Card>
-                <CardHeader class="flex flex-col gap-4 pb-4 md:flex-row md:items-center md:justify-between">
+        <div>
+                <div class="flex flex-col gap-4 pb-4 md:flex-row md:items-center md:justify-between">
                     <div class="w-full">
                         <Heading
                             title="Teachers"
@@ -228,8 +227,8 @@ const columns = computed(() => createColumns(openDeleteDialog, openRestoreDialog
                             Create teacher
                         </Link>
                     </Button>
-                </CardHeader>
-                <CardContent class="space-y-6">
+                </div>
+                <div class="space-y-6">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
                         <div class="w-full max-w-sm">
                             <Input
@@ -266,8 +265,8 @@ const columns = computed(() => createColumns(openDeleteDialog, openRestoreDialog
                         :data-count="props.teachers.data.length"
                         :per-page-options="props.perPageOptions"
                     />
-            </CardContent>
-        </Card>
+            </div>
+        </div>
 
         <Dialog v-model:open="isDeleteDialogOpen">
             <DialogContent class="max-w-md">
