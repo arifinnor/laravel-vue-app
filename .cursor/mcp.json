@@ -1,10 +1,9 @@
 {
     "mcpServers": {
         "laravel-boost": {
-            "command": "wsl.exe",
+            "command": "php",
             "args": [
-                "/home/itrsudsda/.config/herd-lite/bin/php",
-                "/home/itrsudsda/developments/sims-app/artisan",
+                "artisan",
                 "boost:mcp"
             ]
         }
