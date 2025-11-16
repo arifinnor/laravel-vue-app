@@ -1,7 +1,6 @@
 import { h } from 'vue';
 import type { ColumnDef } from '@tanstack/vue-table';
 import { Link } from '@inertiajs/vue3';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import UserController from '@/actions/App/Http/Controllers/UserController';
 import ActionsCell from './ActionsCell.vue';
@@ -14,15 +13,6 @@ export interface User {
     createdAt: string;
     updatedAt: string;
     deletedAt: string | null;
-}
-
-interface ColumnActionsProps {
-    user: User;
-    onDeleteClick: (
-        user: User,
-        submit: () => void,
-        processing: () => boolean,
-    ) => void;
 }
 
 const formatDateTime = (value: string): string =>

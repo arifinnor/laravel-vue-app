@@ -1,7 +1,6 @@
 import { h } from 'vue';
 import type { ColumnDef } from '@tanstack/vue-table';
 import { Link } from '@inertiajs/vue3';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import TeacherController from '@/actions/App/Http/Controllers/TeacherController';
 import ActionsCell from './ActionsCell.vue';
@@ -15,15 +14,6 @@ export interface Teacher {
     createdAt: string;
     updatedAt: string;
     deletedAt: string | null;
-}
-
-interface ColumnActionsProps {
-    teacher: Teacher;
-    onDeleteClick: (
-        teacher: Teacher,
-        submit: () => void,
-        processing: () => boolean,
-    ) => void;
 }
 
 const formatDateTime = (value: string): string =>
