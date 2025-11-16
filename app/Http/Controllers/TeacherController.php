@@ -26,6 +26,7 @@ class TeacherController extends Controller
             ->when($validated['search'], function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
                         ->orWhere('teacher_number', 'like', "%{$search}%");
                 });
             })
