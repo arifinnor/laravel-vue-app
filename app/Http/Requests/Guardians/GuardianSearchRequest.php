@@ -38,7 +38,7 @@ class GuardianSearchRequest extends FormRequest
 
         return [
             'search' => $validated['search'],
-            'limit' => (int) ($validated['limit'] ?? 20),
+            'limit' => (int) ($validated['limit'] ?? 10),
         ];
     }
 }

@@ -132,11 +132,7 @@ class GuardianController extends Controller
         $validated = $request->validated();
 
         $guardians = Guardian::query()
-            ->where(function ($query) use ($validated) {
-                $query->where('name', 'like', "%{$validated['search']}%")
-                    ->orWhere('email', 'like', "%{$validated['search']}%")
-                    ->orWhere('phone', 'like', "%{$validated['search']}%");
-            })
+            ->where('name', 'like', "%{$validated['search']}%")
             ->limit($validated['limit'])
             ->get()
             ->map(fn (Guardian $guardian) => [
