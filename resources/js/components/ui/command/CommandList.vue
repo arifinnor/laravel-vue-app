@@ -1,24 +1,21 @@
 <script setup lang="ts">
-import { CommandList as CommandListPrimitive, type CommandListProps, useForwardProps } from 'reka-ui'
-import { cn } from '@/lib/utils'
-import { computed, type HTMLAttributes } from 'vue'
+import type { ListboxContentProps } from "reka-ui"
+import type { HTMLAttributes } from "vue"
+import { reactiveOmit } from "@vueuse/core"
+import { ListboxContent, useForwardProps } from "reka-ui"
+import { cn } from "@/lib/utils"
 
-const props = defineProps<CommandListProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<ListboxContentProps & { class?: HTMLAttributes["class"] }>()
 
-const delegatedProps = computed(() => {
-  const { class: _, ...delegated } = props
-  return delegated
-})
+const delegatedProps = reactiveOmit(props, "class")
 
 const forwarded = useForwardProps(delegatedProps)
 </script>
 
 <template>
-  <CommandListPrimitive
-    v-bind="forwarded"
-    :class="cn('max-h-[300px] overflow-y-auto overflow-x-hidden', props.class)"
-  >
-    <slot />
-  </CommandListPrimitive>
+  <ListboxContent v-bind="forwarded" :class="cn('max-h-[300px] overflow-y-auto overflow-x-hidden', props.class)">
+    <div role="presentation">
+      <slot />
+    </div>
+  </ListboxContent>
 </template>
-
