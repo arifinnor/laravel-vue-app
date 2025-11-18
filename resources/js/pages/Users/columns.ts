@@ -45,13 +45,6 @@ export const createColumns = (
         accessorKey: 'name',
         header: 'Name',
         cell: ({ row }) => {
-            return h('div', { class: 'font-medium' }, row.getValue('name'));
-        },
-    },
-    {
-        accessorKey: 'email',
-        header: 'Email',
-        cell: ({ row }) => {
             const user = row.original;
             return h(
                 Link,
@@ -59,8 +52,15 @@ export const createColumns = (
                     href: UserController.show.url(user.id),
                     class: 'text-primary underline-offset-4 transition hover:underline',
                 },
-                () => row.getValue('email'),
+                () => row.getValue('name'),
             );
+        },
+    },
+    {
+        accessorKey: 'email',
+        header: 'Email',
+        cell: ({ row }) => {
+            return h('div', { class: 'font-medium' }, row.getValue('email'));
         },
     },
     {

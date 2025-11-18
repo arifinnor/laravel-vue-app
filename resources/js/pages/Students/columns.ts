@@ -53,26 +53,22 @@ export const createColumns = (
         accessorKey: 'name',
         header: 'Name',
         cell: ({ row }) => {
-            return h('div', { class: 'font-medium' }, row.getValue('name'));
-        },
-    },
-    {
-        accessorKey: 'email',
-        header: 'Email',
-        cell: ({ row }) => {
             const student = row.original;
-            const email = row.getValue('email') as string | null;
-            if (!email) {
-                return h('div', { class: 'text-muted-foreground' }, '—');
-            }
             return h(
                 Link,
                 {
                     href: StudentController.show.url(student.id),
                     class: 'text-primary underline-offset-4 transition hover:underline',
                 },
-                () => email,
+                () => row.getValue('name'),
             );
+        },
+    },
+    {
+        accessorKey: 'email',
+        header: 'Email',
+        cell: ({ row }) => {
+            return h('div', { class: 'font-medium' }, row.getValue('email'));
         },
     },
     {
