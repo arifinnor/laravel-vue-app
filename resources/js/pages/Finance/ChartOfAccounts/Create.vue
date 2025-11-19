@@ -122,7 +122,7 @@ watch(accountType, (newType) => {
                             id="description"
                             name="description"
                             placeholder="Optional description"
-                            rows="3"
+                            :rows="3"
                         />
                         <InputError :message="errors.description" />
                     </div>
@@ -134,7 +134,6 @@ watch(accountType, (newType) => {
                                 <SelectValue placeholder="Select a category (optional)" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">None</SelectItem>
                                 <SelectItem
                                     v-for="category in props.categories"
                                     :key="category.id"
@@ -154,7 +153,6 @@ watch(accountType, (newType) => {
                                 <SelectValue placeholder="Select a parent account (optional)" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="">None (Root Level)</SelectItem>
                                 <SelectItem
                                     v-for="parent in props.parentOptions"
                                     :key="parent.id"
