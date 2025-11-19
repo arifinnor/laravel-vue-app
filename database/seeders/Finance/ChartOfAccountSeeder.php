@@ -4,6 +4,7 @@ namespace Database\Seeders\Finance;
 
 use App\Enums\Finance\AccountType;
 use App\Enums\Finance\NormalBalance;
+use App\Enums\Finance\ReportType;
 use App\Models\Finance\AccountCategory;
 use App\Models\Finance\ChartOfAccount;
 use Illuminate\Database\Seeder;
@@ -15,77 +16,375 @@ class ChartOfAccountSeeder extends Seeder
      */
     public function run(): void
     {
-        $categories = AccountCategory::query()
-            ->get(['id', 'name'])
-            ->keyBy('name')
-            ->map(fn (AccountCategory $category) => $category->getKey());
+        // Step 1: Create Account Categories
+        $categories = $this->createAccountCategories();
 
-        $accounts = [];
+        // Step 2: Create Chart of Accounts with hierarchy
+        $this->createChartOfAccounts($categories);
+    }
 
-        $definitions = [
-            ['code' => '1-0000', 'name' => 'Assets', 'category' => 'Current Assets', 'type' => AccountType::Asset, 'is_posting' => false],
-            ['code' => '1-1000', 'name' => 'Cash and Cash Equivalents', 'category' => 'Current Assets', 'type' => AccountType::Asset, 'parent' => '1-0000', 'is_cash' => true],
-            ['code' => '1-1100', 'name' => 'Petty Cash', 'category' => 'Current Assets', 'type' => AccountType::Asset, 'parent' => '1-1000', 'is_cash' => true],
-            ['code' => '1-1200', 'name' => 'Operating Bank Account', 'category' => 'Current Assets', 'type' => AccountType::Asset, 'parent' => '1-1000', 'is_cash' => true],
-            ['code' => '1-2000', 'name' => 'Accounts Receivable', 'category' => 'Current Assets', 'type' => AccountType::Asset, 'parent' => '1-0000'],
-            ['code' => '1-3000', 'name' => 'Prepaid Expenses', 'category' => 'Current Assets', 'type' => AccountType::Asset, 'parent' => '1-0000'],
-            ['code' => '1-4000', 'name' => 'Property and Equipment', 'category' => 'Non-Current Assets', 'type' => AccountType::Asset, 'parent' => '1-0000'],
-
-            ['code' => '2-0000', 'name' => 'Liabilities', 'category' => 'Current Liabilities', 'type' => AccountType::Liability, 'is_posting' => false],
-            ['code' => '2-1000', 'name' => 'Accounts Payable', 'category' => 'Current Liabilities', 'type' => AccountType::Liability, 'parent' => '2-0000'],
-            ['code' => '2-2000', 'name' => 'Accrued Expenses', 'category' => 'Current Liabilities', 'type' => AccountType::Liability, 'parent' => '2-0000'],
-            ['code' => '2-3000', 'name' => 'Deferred Revenue', 'category' => 'Current Liabilities', 'type' => AccountType::Liability, 'parent' => '2-0000'],
-
-            ['code' => '3-0000', 'name' => 'Equity', 'category' => 'Equity', 'type' => AccountType::Equity, 'is_posting' => false],
-            ['code' => '3-1000', 'name' => 'Retained Earnings', 'category' => 'Equity', 'type' => AccountType::Equity, 'parent' => '3-0000'],
-            ['code' => '3-2000', 'name' => 'Capital Contributions', 'category' => 'Equity', 'type' => AccountType::Equity, 'parent' => '3-0000'],
-
-            ['code' => '4-0000', 'name' => 'Revenue', 'category' => 'Operating Revenue', 'type' => AccountType::Revenue, 'is_posting' => false],
-            ['code' => '4-1000', 'name' => 'Tuition Revenue', 'category' => 'Operating Revenue', 'type' => AccountType::Revenue, 'parent' => '4-0000'],
-            ['code' => '4-2000', 'name' => 'Grants and Subsidies', 'category' => 'Non-Operating Revenue', 'type' => AccountType::Revenue, 'parent' => '4-0000'],
-
-            ['code' => '5-0000', 'name' => 'Expenses', 'category' => 'Operating Expenses', 'type' => AccountType::Expense, 'is_posting' => false],
-            ['code' => '5-1000', 'name' => 'Salaries Expense', 'category' => 'Operating Expenses', 'type' => AccountType::Expense, 'parent' => '5-0000'],
-            ['code' => '5-1100', 'name' => 'Benefits Expense', 'category' => 'Operating Expenses', 'type' => AccountType::Expense, 'parent' => '5-0000'],
-            ['code' => '5-2000', 'name' => 'Rent Expense', 'category' => 'Operating Expenses', 'type' => AccountType::Expense, 'parent' => '5-0000'],
-            ['code' => '5-3000', 'name' => 'Supplies Expense', 'category' => 'Operating Expenses', 'type' => AccountType::Expense, 'parent' => '5-0000'],
-            ['code' => '5-4000', 'name' => 'Scholarship Expense', 'category' => 'Cost of Goods Sold', 'type' => AccountType::Expense, 'parent' => '5-0000'],
+    /**
+     * @return array<string, AccountCategory>
+     */
+    private function createAccountCategories(): array
+    {
+        $categoryDefinitions = [
+            ['name' => 'Current Assets', 'report_type' => ReportType::BalanceSheet, 'sequence' => 100],
+            ['name' => 'Fixed Assets', 'report_type' => ReportType::BalanceSheet, 'sequence' => 200],
+            ['name' => 'Current Liabilities', 'report_type' => ReportType::BalanceSheet, 'sequence' => 300],
+            ['name' => 'Long Term Liabilities', 'report_type' => ReportType::BalanceSheet, 'sequence' => 400],
+            ['name' => 'Equity', 'report_type' => ReportType::BalanceSheet, 'sequence' => 500],
+            ['name' => 'Operational Revenue', 'report_type' => ReportType::IncomeStatement, 'sequence' => 600],
+            ['name' => 'Other Revenue', 'report_type' => ReportType::IncomeStatement, 'sequence' => 650],
+            ['name' => 'Operational Expenses', 'report_type' => ReportType::IncomeStatement, 'sequence' => 700],
+            ['name' => 'Admin Expenses', 'report_type' => ReportType::IncomeStatement, 'sequence' => 800],
         ];
 
-        foreach ($definitions as $definition) {
+        $categories = [];
+
+        foreach ($categoryDefinitions as $definition) {
+            $category = AccountCategory::query()->updateOrCreate(
+                ['name' => $definition['name']],
+                [
+                    'report_type' => $definition['report_type']->value,
+                    'sequence' => $definition['sequence'],
+                ]
+            );
+
+            $categories[$definition['name']] = $category;
+        }
+
+        return $categories;
+    }
+
+    /**
+     * @param  array<string, AccountCategory>  $categories
+     */
+    private function createChartOfAccounts(array $categories): void
+    {
+        $accounts = [];
+
+        // Define all accounts with their hierarchy
+        $accountDefinitions = [
+            // ASSETS - Level 1 Header
+            [
+                'code' => '1-0000',
+                'name' => 'ASSETS',
+                'category' => 'Current Assets',
+                'account_type' => AccountType::Asset,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => false,
+                'is_cash' => false,
+                'parent_code' => null,
+            ],
+
+            // Current Assets - Level 2 Header
+            [
+                'code' => '1-1000',
+                'name' => 'Current Assets',
+                'category' => 'Current Assets',
+                'account_type' => AccountType::Asset,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => false,
+                'is_cash' => false,
+                'parent_code' => '1-0000',
+            ],
+
+            // Current Assets - Detail Accounts
+            [
+                'code' => '1-1101',
+                'name' => 'Kas Tunai',
+                'category' => 'Current Assets',
+                'account_type' => AccountType::Asset,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => true,
+                'is_cash' => true,
+                'parent_code' => '1-1000',
+            ],
+            [
+                'code' => '1-1102',
+                'name' => 'Bank Operasional',
+                'category' => 'Current Assets',
+                'account_type' => AccountType::Asset,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => true,
+                'is_cash' => true,
+                'parent_code' => '1-1000',
+            ],
+            [
+                'code' => '1-1103',
+                'name' => 'Piutang Siswa',
+                'category' => 'Current Assets',
+                'account_type' => AccountType::Asset,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '1-1000',
+            ],
+            [
+                'code' => '1-1104',
+                'name' => 'Perlengkapan/Inventory',
+                'category' => 'Current Assets',
+                'account_type' => AccountType::Asset,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '1-1000',
+            ],
+
+            // Fixed Assets - Level 2 Header
+            [
+                'code' => '1-2000',
+                'name' => 'Fixed Assets',
+                'category' => 'Fixed Assets',
+                'account_type' => AccountType::Asset,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => false,
+                'is_cash' => false,
+                'parent_code' => '1-0000',
+            ],
+
+            // Fixed Assets - Detail Accounts
+            [
+                'code' => '1-2101',
+                'name' => 'Gedung Sekolah',
+                'category' => 'Fixed Assets',
+                'account_type' => AccountType::Asset,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '1-2000',
+            ],
+            [
+                'code' => '1-2102',
+                'name' => 'Peralatan Lab & Komputer',
+                'category' => 'Fixed Assets',
+                'account_type' => AccountType::Asset,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '1-2000',
+            ],
+            [
+                'code' => '1-2103',
+                'name' => 'Akumulasi Penyusutan',
+                'category' => 'Fixed Assets',
+                'account_type' => AccountType::Asset,
+                'normal_balance' => NormalBalance::Credit, // Contra account
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '1-2000',
+            ],
+
+            // LIABILITIES - Level 1 Header
+            [
+                'code' => '2-0000',
+                'name' => 'LIABILITIES',
+                'category' => 'Current Liabilities',
+                'account_type' => AccountType::Liability,
+                'normal_balance' => NormalBalance::Credit,
+                'is_posting' => false,
+                'is_cash' => false,
+                'parent_code' => null,
+            ],
+
+            // Current Liabilities - Level 2 Header
+            [
+                'code' => '2-1000',
+                'name' => 'Current Liabilities',
+                'category' => 'Current Liabilities',
+                'account_type' => AccountType::Liability,
+                'normal_balance' => NormalBalance::Credit,
+                'is_posting' => false,
+                'is_cash' => false,
+                'parent_code' => '2-0000',
+            ],
+
+            // Current Liabilities - Detail Accounts
+            [
+                'code' => '2-1101',
+                'name' => 'Utang Usaha',
+                'category' => 'Current Liabilities',
+                'account_type' => AccountType::Liability,
+                'normal_balance' => NormalBalance::Credit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '2-1000',
+            ],
+            [
+                'code' => '2-1102',
+                'name' => 'Utang Gaji Guru',
+                'category' => 'Current Liabilities',
+                'account_type' => AccountType::Liability,
+                'normal_balance' => NormalBalance::Credit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '2-1000',
+            ],
+
+            // REVENUE - Level 1 Header
+            [
+                'code' => '4-0000',
+                'name' => 'REVENUE',
+                'category' => 'Operational Revenue',
+                'account_type' => AccountType::Revenue,
+                'normal_balance' => NormalBalance::Credit,
+                'is_posting' => false,
+                'is_cash' => false,
+                'parent_code' => null,
+            ],
+
+            // Operational Revenue - Level 2 Header
+            [
+                'code' => '4-1000',
+                'name' => 'Operational Revenue',
+                'category' => 'Operational Revenue',
+                'account_type' => AccountType::Revenue,
+                'normal_balance' => NormalBalance::Credit,
+                'is_posting' => false,
+                'is_cash' => false,
+                'parent_code' => '4-0000',
+            ],
+
+            // Operational Revenue - Detail Accounts
+            [
+                'code' => '4-1101',
+                'name' => 'Pendapatan SPP',
+                'category' => 'Operational Revenue',
+                'account_type' => AccountType::Revenue,
+                'normal_balance' => NormalBalance::Credit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '4-1000',
+            ],
+            [
+                'code' => '4-1102',
+                'name' => 'Pendapatan Uang Pangkal',
+                'category' => 'Operational Revenue',
+                'account_type' => AccountType::Revenue,
+                'normal_balance' => NormalBalance::Credit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '4-1000',
+            ],
+            [
+                'code' => '4-1103',
+                'name' => 'Pendapatan Denda',
+                'category' => 'Operational Revenue',
+                'account_type' => AccountType::Revenue,
+                'normal_balance' => NormalBalance::Credit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '4-1000',
+            ],
+
+            // EXPENSES - Level 1 Header
+            [
+                'code' => '6-0000',
+                'name' => 'EXPENSES',
+                'category' => 'Operational Expenses',
+                'account_type' => AccountType::Expense,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => false,
+                'is_cash' => false,
+                'parent_code' => null,
+            ],
+
+            // Academic Expenses - Level 2 Header
+            [
+                'code' => '6-1000',
+                'name' => 'Academic Expenses',
+                'category' => 'Operational Expenses',
+                'account_type' => AccountType::Expense,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => false,
+                'is_cash' => false,
+                'parent_code' => '6-0000',
+            ],
+
+            // Academic Expenses - Detail Accounts
+            [
+                'code' => '6-1101',
+                'name' => 'Beban Gaji Guru',
+                'category' => 'Operational Expenses',
+                'account_type' => AccountType::Expense,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '6-1000',
+            ],
+            [
+                'code' => '6-1102',
+                'name' => 'Beban Alat Tulis Sekolah',
+                'category' => 'Operational Expenses',
+                'account_type' => AccountType::Expense,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '6-1000',
+            ],
+
+            // General Expenses - Level 2 Header
+            [
+                'code' => '6-2000',
+                'name' => 'General Expenses',
+                'category' => 'Operational Expenses',
+                'account_type' => AccountType::Expense,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => false,
+                'is_cash' => false,
+                'parent_code' => '6-0000',
+            ],
+
+            // General Expenses - Detail Accounts
+            [
+                'code' => '6-2101',
+                'name' => 'Beban Listrik & Air',
+                'category' => 'Operational Expenses',
+                'account_type' => AccountType::Expense,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '6-2000',
+            ],
+            [
+                'code' => '6-2102',
+                'name' => 'Beban Admin Bank',
+                'category' => 'Operational Expenses',
+                'account_type' => AccountType::Expense,
+                'normal_balance' => NormalBalance::Debit,
+                'is_posting' => true,
+                'is_cash' => false,
+                'parent_code' => '6-2000',
+            ],
+        ];
+
+        // Create accounts in order, handling parent relationships
+        foreach ($accountDefinitions as $definition) {
             $parentId = null;
-            if (isset($definition['parent'])) {
-                $parent = $accounts[$definition['parent']] ?? ChartOfAccount::query()->where('code', $definition['parent'])->first();
+            if ($definition['parent_code'] !== null) {
+                $parent = $accounts[$definition['parent_code']] ?? ChartOfAccount::query()
+                    ->where('code', $definition['parent_code'])
+                    ->first();
                 $parentId = $parent?->getKey();
             }
 
-            $payload = [
-                'category_id' => $categories[$definition['category']] ?? null,
-                'name' => $definition['name'],
-                'description' => $definition['description'] ?? null,
-                'parent_id' => $parentId,
-                'account_type' => $definition['type']->value,
-                'normal_balance' => $this->normalBalanceFor($definition['type'])->value,
-                'is_posting' => $definition['is_posting'] ?? true,
-                'is_cash' => $definition['is_cash'] ?? false,
-                'is_active' => $definition['is_active'] ?? true,
-            ];
-
             $account = ChartOfAccount::query()->updateOrCreate(
                 ['code' => $definition['code']],
-                $payload
+                [
+                    'category_id' => $categories[$definition['category']]->getKey(),
+                    'name' => $definition['name'],
+                    'description' => null,
+                    'parent_id' => $parentId,
+                    'account_type' => $definition['account_type']->value,
+                    'normal_balance' => $definition['normal_balance']->value,
+                    'is_posting' => $definition['is_posting'],
+                    'is_cash' => $definition['is_cash'],
+                    'is_active' => true,
+                ]
             );
 
             $accounts[$definition['code']] = $account;
         }
-    }
-
-    private function normalBalanceFor(AccountType $type): NormalBalance
-    {
-        return match ($type) {
-            AccountType::Asset,
-            AccountType::Expense => NormalBalance::Debit,
-            default => NormalBalance::Credit,
-        };
     }
 }

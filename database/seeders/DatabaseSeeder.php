@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Database\Seeders\Finance\AccountCategorySeeder;
 use Database\Seeders\Finance\ChartOfAccountSeeder;
+use Database\Seeders\Finance\TransactionTypeSeeder;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,7 +16,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(TeacherSeeder::class);
         $this->call(StudentSeeder::class);
-        $this->call(AccountCategorySeeder::class);
         $this->call(ChartOfAccountSeeder::class);
+        $this->call(TransactionTypeSeeder::class);
     }
 }

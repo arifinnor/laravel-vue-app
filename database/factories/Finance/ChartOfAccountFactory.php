@@ -78,6 +78,7 @@ class ChartOfAccountFactory extends Factory
     {
         return $this->state(fn (): array => [
             'is_posting' => false,
+            'parent_id' => null,
         ]);
     }
 
@@ -85,6 +86,8 @@ class ChartOfAccountFactory extends Factory
     {
         return $this->state(fn (): array => [
             'is_cash' => true,
+            'account_type' => AccountType::Asset->value,
+            'normal_balance' => NormalBalance::Debit->value,
         ]);
     }
 
