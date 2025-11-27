@@ -212,7 +212,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: ReportController.trialBalanceIndex().url,
     },
     {
-        title: 'Neraca Saldo',
+        title: 'Trial Balance',
         href: ReportController.trialBalanceIndex().url,
     },
 ];
@@ -220,13 +220,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Neraca Saldo" />
+        <Head title="Trial Balance" />
 
         <div>
             <div class="flex flex-col gap-4 pb-4 md:flex-row md:items-center md:justify-between">
                 <div class="w-full">
                     <Heading
-                        title="Neraca Saldo"
+                        title="Trial Balance"
                         description="Trial Balance Report"
                     />
                 </div>
@@ -343,7 +343,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                     <div class="p-4 print:border-b print:border-sidebar-border/60 print:pb-2">
                         <div class="space-y-1">
                             <h3 class="text-lg font-semibold">
-                                Neraca Saldo / Trial Balance
+                                Trial Balance
                             </h3>
                             <p class="text-sm text-muted-foreground">
                                 Period: {{ formatDate(dateFrom) }} - {{ formatDate(dateTo) }}

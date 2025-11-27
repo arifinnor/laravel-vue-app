@@ -26,14 +26,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const reports = [
     {
-        title: 'Buku Besar',
-        description: 'General Ledger - View detailed account transactions and running balances',
+        title: 'General Ledger',
+        description: 'View detailed account transactions and running balances',
         icon: BookOpen,
         href: ReportController.generalLedgerIndex().url,
     },
     {
-        title: 'Neraca Saldo',
-        description: 'Trial Balance - Summary of all account balances for a period',
+        title: 'Trial Balance',
+        description: 'Summary of all account balances for a period',
         icon: Scale,
         href: ReportController.trialBalanceIndex().url,
     },
@@ -85,5 +85,6 @@ const reports = [
         </div>
     </AppLayout>
 </template>
+
 
 

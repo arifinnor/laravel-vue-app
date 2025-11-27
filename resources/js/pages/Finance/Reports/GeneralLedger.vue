@@ -195,7 +195,7 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: ReportController.generalLedgerIndex().url,
     },
     {
-        title: 'Buku Besar',
+        title: 'General Ledger',
         href: ReportController.generalLedgerIndex().url,
     },
 ];
@@ -203,13 +203,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
-        <Head title="Buku Besar" />
+        <Head title="General Ledger" />
 
         <div>
             <div class="flex flex-col gap-4 pb-4 md:flex-row md:items-center md:justify-between">
                 <div class="w-full">
                     <Heading
-                        title="Buku Besar"
+                        title="General Ledger"
                         description="General Ledger Report"
                     />
                 </div>
