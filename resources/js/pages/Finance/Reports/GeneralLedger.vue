@@ -192,7 +192,7 @@ const handlePrint = () => {
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Reports',
-        href: ReportController.generalLedgerIndex().url,
+        href: ReportController.index().url,
     },
     {
         title: 'General Ledger',

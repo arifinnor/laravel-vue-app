@@ -209,7 +209,7 @@ const hasData = computed(() => props.accounts.length > 0);
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Reports',
-        href: ReportController.trialBalanceIndex().url,
+        href: ReportController.index().url,
     },
     {
         title: 'Trial Balance',
