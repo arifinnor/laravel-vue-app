@@ -11,7 +11,7 @@ import {
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { BookOpen, Scale } from 'lucide-vue-next';
+import { BookOpen, Landmark, Scale, TrendingUp } from 'lucide-vue-next';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -36,6 +36,18 @@ const reports = [
         description: 'Summary of all account balances for a period',
         icon: Scale,
         href: ReportController.trialBalanceIndex().url,
+    },
+    {
+        title: 'Income Statement',
+        description: 'Profit and Loss Statement Report',
+        icon: TrendingUp,
+        href: ReportController.incomeStatementIndex().url,
+    },
+    {
+        title: 'Balance Sheet',
+        description: 'Statement of Financial Position',
+        icon: Landmark,
+        href: ReportController.balanceSheetIndex().url,
     },
 ];
 </script>
@@ -85,6 +97,7 @@ const reports = [
         </div>
     </AppLayout>
 </template>
+
 
 
 

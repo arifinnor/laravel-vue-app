@@ -60,6 +60,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('general-ledger/show', [\App\Http\Controllers\Finance\ReportController::class, 'generalLedger'])->name('general-ledger.show');
             Route::get('trial-balance', [\App\Http\Controllers\Finance\ReportController::class, 'trialBalanceIndex'])->name('trial-balance.index');
             Route::get('trial-balance/show', [\App\Http\Controllers\Finance\ReportController::class, 'trialBalance'])->name('trial-balance.show');
+            Route::get('income-statement', [\App\Http\Controllers\Finance\ReportController::class, 'incomeStatementIndex'])->name('income-statement.index');
+            Route::get('income-statement/show', [\App\Http\Controllers\Finance\ReportController::class, 'incomeStatement'])->name('income-statement.show');
+            Route::get('balance-sheet', [\App\Http\Controllers\Finance\ReportController::class, 'balanceSheetIndex'])->name('balance-sheet.index');
+            Route::get('balance-sheet/show', [\App\Http\Controllers\Finance\ReportController::class, 'balanceSheet'])->name('balance-sheet.show');
         });
     });
 });

@@ -163,7 +163,7 @@ const breadcrumbs: BreadcrumbItem[] = [
             </CardHeader>
 
             <form
-                @submit.prevent="form.put(TransactionTypeController.update().url(props.transactionType.id), { preserveScroll: true })"
+                @submit.prevent="form.put(TransactionTypeController.update.url(props.transactionType.id), { preserveScroll: true })"
                 class="contents"
             >
                 <CardContent class="grid gap-6">
