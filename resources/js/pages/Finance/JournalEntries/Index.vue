@@ -149,11 +149,6 @@ const columns = computed(() => createColumns(openVoidDialog));
                         description="Manage general ledger journal entries"
                     />
                 </div>
-                <Button as-child class="w-full md:w-auto">
-                    <Link :href="JournalEntryController.create().url">
-                        Create Entry
-                    </Link>
-                </Button>
             </div>
             <div class="space-y-6">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
