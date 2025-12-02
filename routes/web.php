@@ -40,6 +40,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('guardians/{guardian}/force-delete', [\App\Http\Controllers\GuardianController::class, 'forceDelete'])->name('guardians.force-delete');
 
     Route::prefix('finance')->name('finance.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Finance\FinanceController::class, 'index'])->name('index');
         Route::get('chart-of-accounts/next-code', [ChartOfAccountController::class, 'getNextCode'])->name('chart-of-accounts.next-code');
         Route::resource('chart-of-accounts', ChartOfAccountController::class);
         Route::post('chart-of-accounts/{chart_of_account}/restore', [ChartOfAccountController::class, 'restore'])->name('chart-of-accounts.restore');
