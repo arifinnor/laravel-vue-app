@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FinanceController from '@/actions/App/Http/Controllers/Finance/FinanceController';
 import ReportController from '@/actions/App/Http/Controllers/Finance/ReportController';
 import Heading from '@/components/Heading.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -158,8 +159,8 @@ const currentYearEarningsValue = computed(() => parseFloat(props.current_year_ea
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Reports',
-        href: ReportController.index().url,
+        title: 'Finance',
+        href: FinanceController.index().url,
     },
     {
         title: 'Balance Sheet',

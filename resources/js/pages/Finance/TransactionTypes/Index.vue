@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FinanceController from '@/actions/App/Http/Controllers/Finance/FinanceController';
 import TransactionTypeController, { updateAccount } from '@/actions/App/Http/Controllers/Finance/TransactionTypeController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -59,7 +60,11 @@ const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Journal Configuration',
+        title: 'Finance',
+        href: FinanceController.index().url,
+    },
+    {
+        title: 'Transaction Configurations',
         href: TransactionTypeController.index().url,
     },
 ];

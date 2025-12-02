@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue';
 import { cn } from '@/lib/utils';
+import FinanceController from '@/actions/App/Http/Controllers/Finance/FinanceController';
 import TransactionController from '@/actions/App/Http/Controllers/Finance/TransactionController';
 import TransactionTypeCombobox from '@/components/Finance/TransactionTypeCombobox.vue';
 import Heading from '@/components/Heading.vue';
@@ -73,6 +74,10 @@ interface Props {
 const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Finance',
+        href: FinanceController.index().url,
+    },
     {
         title: 'Transactions',
         href: TransactionController.index().url,

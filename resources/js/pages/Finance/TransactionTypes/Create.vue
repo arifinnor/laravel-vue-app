@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FinanceController from '@/actions/App/Http/Controllers/Finance/FinanceController';
 import TransactionTypeController from '@/actions/App/Http/Controllers/Finance/TransactionTypeController';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
@@ -102,7 +103,11 @@ const removeAccountLine = (index: number) => {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Journal Configuration',
+        title: 'Finance',
+        href: FinanceController.index().url,
+    },
+    {
+        title: 'Transaction Configurations',
         href: TransactionTypeController.index().url,
     },
     {

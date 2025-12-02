@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FinanceController from '@/actions/App/Http/Controllers/Finance/FinanceController';
 import ReportController from '@/actions/App/Http/Controllers/Finance/ReportController';
 import AccountCombobox from '@/components/Finance/AccountCombobox.vue';
 import Heading from '@/components/Heading.vue';
@@ -191,8 +192,8 @@ const handlePrint = () => {
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Reports',
-        href: ReportController.index().url,
+        title: 'Finance',
+        href: FinanceController.index().url,
     },
     {
         title: 'General Ledger',

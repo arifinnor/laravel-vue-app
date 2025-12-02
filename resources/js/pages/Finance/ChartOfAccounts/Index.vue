@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FinanceController from '@/actions/App/Http/Controllers/Finance/FinanceController';
 import ChartOfAccountController from '@/actions/App/Http/Controllers/Finance/ChartOfAccountController';
 import Heading from '@/components/Heading.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -159,6 +160,10 @@ onMounted(() => {
 });
 
 const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Finance',
+        href: FinanceController.index().url,
+    },
     {
         title: 'Chart of Accounts',
         href: ChartOfAccountController.index().url,

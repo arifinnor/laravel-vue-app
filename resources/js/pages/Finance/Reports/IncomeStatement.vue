@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FinanceController from '@/actions/App/Http/Controllers/Finance/FinanceController';
 import ReportController from '@/actions/App/Http/Controllers/Finance/ReportController';
 import Heading from '@/components/Heading.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -194,8 +195,8 @@ const netSurplusValue = computed(() => parseFloat(props.net_surplus));
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Reports',
-        href: ReportController.index().url,
+        title: 'Finance',
+        href: FinanceController.index().url,
     },
     {
         title: 'Income Statement',
