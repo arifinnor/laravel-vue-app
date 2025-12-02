@@ -15,10 +15,6 @@ import { Banknote, BookOpen, Landmark, Scale, TrendingUp } from 'lucide-vue-next
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Finance',
-        href: ReportController.index().url,
-    },
-    {
         title: 'Reports',
         href: ReportController.index().url,
     },
